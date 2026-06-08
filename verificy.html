@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VerifiCy — Painel</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#325CFE;--blue2:#4B8FFF;--bg:#0a0f2e;--bg2:#0f1640;--white:#fff;--muted:rgba(255,255,255,0.55);--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--success:#22c55e;--error:#ef4444}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--white);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 15% 0%,rgba(50,92,254,.3) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 85% 100%,rgba(75,143,255,.15) 0%,transparent 60%);pointer-events:none;z-index:0}
+#app{position:relative;z-index:1;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 5%;border-bottom:1px solid var(--border);background:rgba(10,15,46,.8);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50}
+.topbar-logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.avatar{width:34px;height:34px;border-radius:50%;border:2px solid var(--blue);object-fit:cover}
+.avatar-ph{width:34px;height:34px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+.user-name{font-size:.875rem;font-weight:500}
+.btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.8rem;transition:all .2s}
+.btn-logout:hover{border-color:rgba(255,255,255,.2);color:var(--white)}
+.layout{display:flex;flex:1}
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);padding:20px 0;flex-shrink:0;display:flex;flex-direction:column;gap:4px;min-height:calc(100vh - 65px)}
+.sidebar-item{display:flex;align-items:center;gap:12px;padding:11px 20px;color:var(--muted);font-size:.875rem;font-weight:500;cursor:pointer;transition:all .2s;border-left:2px solid transparent}
+.sidebar-item:hover{color:var(--white);background:rgba(255,255,255,.04)}
+.sidebar-item.active{color:var(--white);background:rgba(50,92,254,.12);border-left-color:var(--blue)}
+.sidebar-sep{padding:14px 16px 8px;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.content{flex:1;padding:32px 5%;overflow-y:auto}
+h1.pt{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-.02em;margin-bottom:6px}
+.ps{color:var(--muted);font-size:.875rem;margin-bottom:28px}
+.cards-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.card-label{font-size:.75rem;color:var(--muted);margin-bottom:8px;font-weight:500}
+.card-value{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;letter-spacing:-.02em}
+.card-value.blue{color:var(--blue2)}.card-value.green{color:var(--success)}
+.form-group{margin-bottom:18px}
+label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:7px;letter-spacing:.03em;text-transform:uppercase}
+input,select{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--white);font-size:.9rem;font-family:'DM Sans',sans-serif;transition:border .2s;outline:none}
+input:focus,select:focus{border-color:var(--blue)}
+input::placeholder{color:var(--muted)}
+select option{background:#1a1f4e}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:.875rem;cursor:pointer;border:none;transition:all .2s}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 4px 16px rgba(50,92,254,.3)}
+.btn-primary:hover{background:var(--blue2);transform:translateY(-1px)}
+.btn-danger{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
+.btn-danger:hover{background:rgba(239,68,68,.25)}
+.btn-outline{background:transparent;color:var(--white);border:1px solid var(--border)}
+.btn-outline:hover{background:var(--card)}
+.btn-sm{padding:7px 14px;font-size:.8rem}
+.tw{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{padding:12px 16px;text-align:left;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:12px 16px;font-size:.875rem;border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:600}
+.bg{background:rgba(34,197,94,.15);color:#22c55e}.bb{background:rgba(50,92,254,.15);color:var(--blue2)}.br{background:rgba(239,68,68,.15);color:#ef4444}.bgr{background:rgba(255,255,255,.08);color:var(--muted)}
+.alert{padding:12px 16px;border-radius:8px;font-size:.875rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.as{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#22c55e}
+.ae{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444}
+.ai{background:rgba(50,92,254,.1);border:1px solid rgba(50,92,254,.3);color:var(--blue2)}
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty-icon{font-size:2.5rem;margin-bottom:12px}
+.empty-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--white);margin-bottom:6px}
+.empty-desc{font-size:.875rem;margin-bottom:20px}
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:32px;text-align:center;padding:20px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px;max-width:400px;width:100%}
+.login-card h2{font-family:'Syne',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:8px}
+.login-card p{color:var(--muted);font-size:.9rem;margin-bottom:24px;line-height:1.6}
+.dbtn{display:flex;align-items:center;justify-content:center;gap:12px;background:#5865F2;color:#fff;padding:14px 24px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;border:none;width:100%;transition:all .2s}
+.dbtn:hover{background:#4752c4;transform:translateY(-1px)}
+.server-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-top:20px}
+.server-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .25s}
+.server-card:hover{border-color:var(--blue);background:rgba(50,92,254,.08);transform:translateY(-2px)}
+.server-icon{width:52px;height:52px;border-radius:50%;margin:0 auto 12px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;overflow:hidden}
+.server-icon img{width:100%;height:100%;object-fit:cover}
+.server-name{font-size:.875rem;font-weight:600;word-break:break-word}
+.verify-card{max-width:480px;margin:40px auto;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;text-align:center}
+.verify-methods{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0}
+.method-btn{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:18px 12px;cursor:pointer;transition:all .2s;color:var(--white);font-family:'DM Sans',sans-serif}
+.method-btn:hover,.method-btn.active{border-color:var(--blue);background:rgba(50,92,254,.1)}
+.method-icon{font-size:1.6rem;margin-bottom:8px}
+.method-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem}
+.method-desc{font-size:.75rem;color:var(--muted);margin-top:4px}
+.code-box{background:rgba(0,0,0,.3);border:2px dashed rgba(50,92,254,.5);border-radius:10px;padding:20px;font-family:'Courier New',monospace;font-size:1.5rem;font-weight:700;color:var(--blue2);letter-spacing:.15em;margin:16px 0}
+.sep{height:1px;background:var(--border);margin:20px 0}
+.spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:768px){.sidebar{display:none}.content{padding:20px 4%}.verify-methods{grid-template-columns:1fr}.cards-row{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const API='https://verificy.brazilliangames.com.br/verificy/api';
+let S={token:localStorage.getItem('vcy_token'),user:null,guilds:[],guild:null,page:'loading',groups:[],mappings:[]};
+async function api(path,method='GET',body=null){
+  const o={method,headers:{'Content-Type':'application/json'}};
+  if(S.token)o.headers['Authorization']='Bearer '+S.token;
+  if(body)o.body=JSON.stringify(body);
+  try{const r=await fetch(API+path,o);if(r.status===401){logout();return null;}return r.json();}
+  catch(e){console.error(e);return null;}
+}
+function go(p){S.page=p;render();}
+function logout(){localStorage.removeItem('vcy_token');S.token=null;S.user=null;S.guild=null;go('login');}
+async function init(){
+  const p=new URLSearchParams(window.location.search);
+  const t=p.get('token');
+  if(t){localStorage.setItem('vcy_token',t);S.token=t;history.replaceState({},``,location.pathname);}
+  if(location.pathname.includes('/verified')){go('verified');return;}
+  if(location.pathname.endsWith('/verify')){go('verify');return;}
+  if(!S.token){go('login');return;}
+  const me=await api('/auth/me');
+  if(!me||me.error){go('login');return;}
+  S.user=me;S.guilds=me.guilds||[];
+  go(S.guilds.length?'servers':'login');
+}
+function logo(sz){return `<svg width="${sz}" height="${sz}" viewBox="0 0 64 64" fill="none"><path d="M32 4L58 18V46L32 60L6 46V18L32 4Z" stroke="white" stroke-width="4" stroke-linejoin="round"/><path d="M20 32L28 40L44 24" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
+function topbar(){
+  const u=S.user;
+  const av=u?.avatar?`<img class="avatar" src="https://cdn.discordapp.com/avatars/${u.discord_id}/${u.avatar}.png"/>`:`<div class="avatar-ph">${u?.username?.slice(0,1)||'?'}</div>`;
+  return `<div class="topbar"><div class="topbar-logo" onclick="go('servers')">${logo(32)}<span class="logo-text">VerifiCy</span></div><div class="topbar-right">${u?av:''}${u?`<span class="user-name">${u.username}</span>`:''}${u?`<button class="btn-logout" onclick="logout()">Sair</button>`:''}</div></div>`;
+}
+function sidebar(active){
+  const items=[{id:'dashboard',icon:'📊',label:'Dashboard'},{id:'groups',icon:'🎮',label:'Grupos'},{id:'roles',icon:'🎭',label:'Cargos'},{id:'config',icon:'⚙️',label:'Configurações'},{id:'logs',icon:'📋',label:'Logs'}];
+  return `<div class="sidebar"><div class="sidebar-sep">SERVIDOR</div>${items.map(i=>`<div class="sidebar-item ${active===i.id?'active':''}" onclick="go('${i.id}')"><span>${i.icon}</span> ${i.label}</div>`).join('')}<div style="flex:1"></div><div class="sidebar-item" onclick="go('servers')"><span>🔄</span> Trocar servidor</div></div>`;
+}
+function layout(active,content){return topbar()+`<div class="layout">${sidebar(active)}<div class="content">${content}</div></div>`;}
+function showAlert(id,type,msg){const el=document.getElementById(id);if(!el)return;const c={success:'as',error:'ae',info:'ai'}[type]||'ai';el.innerHTML=`<div class="alert ${c}">${msg}</div>`;setTimeout(()=>{if(el)el.innerHTML='';},4000);}
+function render(){
+  const app=document.getElementById('app');
+  switch(S.page){
+    case 'loading':app.innerHTML=`<div style="min-height:100vh;display:flex;align-items:center;justify-content:center"><div class="spinner" style="width:40px;height:40px;border-width:3px"></div></div>`;break;
+    case 'login':app.innerHTML=renderLogin();break;
+    case 'servers':app.innerHTML=renderServers();break;
+    case 'dashboard':app.innerHTML=layout('dashboard',renderDashboard());loadDashboard();break;
+    case 'groups':app.innerHTML=layout('groups',renderGroups());loadGroups();break;
+    case 'roles':app.innerHTML=layout('roles',renderRolesPage());loadRoles();break;
+    case 'config':app.innerHTML=layout('config',renderConfig());loadConfig();break;
+    case 'logs':app.innerHTML=layout('logs',renderLogsPage());loadLogs();break;
+    case 'verify':app.innerHTML=renderVerify();break;
+    case 'verified':app.innerHTML=renderVerifiedSuccess();break;
+  }
+}
+function renderLogin(){return `<div class="login-page"><div>${logo(56)}<p style="font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;margin-top:10px">VerifiCy</p><p style="color:var(--muted);margin-top:4px">Verifique. Sincronize. Automatize.</p></div><div class="login-card"><h2>Entrar no Painel</h2><p>Faça login com sua conta Discord para gerenciar seus servidores.</p><button class="dbtn" onclick="loginDiscord()"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>Entrar com Discord</button></div><p style="color:var(--muted);font-size:.75rem"><a href="/verify" style="color:var(--blue2)">Verificar minha conta Roblox</a></p></div>`;}
+function renderServers(){
+  const g=S.guilds;
+  return `<div style="min-height:100vh">${topbar()}<div style="max-width:700px;margin:40px auto;padding:0 20px"><h1 class="pt">Selecionar Servidor</h1><p class="ps">Escolha o servidor que deseja gerenciar.</p>${!g.length?`<div class="alert ai">Nenhum servidor onde você é admin. <a href="https://discord.com/oauth2/authorize?client_id=1513017992366264390&permissions=8&scope=bot+applications.commands" target="_blank" style="color:var(--blue2)">Adicionar VerifiCy →</a></div>`:''}<div class="server-grid">${g.map(x=>`<div class="server-card" onclick="selectServer('${x.id}','${x.name.replace(/'/g,"\\'")}')"><div class="server-icon">${x.icon?`<img src="https://cdn.discordapp.com/icons/${x.id}/${x.icon}.png"/>`:x.name.slice(0,2).toUpperCase()}</div><div class="server-name">${x.name}</div></div>`).join('')}<div class="server-card" onclick="window.open('https://discord.com/oauth2/authorize?client_id=1513017992366264390&permissions=8&scope=bot+applications.commands','_blank')" style="border-style:dashed;opacity:.7"><div class="server-icon" style="background:transparent;border:2px dashed var(--border);font-size:1.5rem">+</div><div class="server-name" style="color:var(--muted)">Adicionar servidor</div></div></div></div></div>`;
+}
+function renderDashboard(){return `<h1 class="pt">Dashboard</h1><p class="ps">Visão geral do servidor</p><div class="cards-row" id="dc">${[0,1,2,3].map(()=>'<div class="card"><div class="card-label">Carregando...</div><div class="card-value">—</div></div>').join('')}</div><div id="dl" class="tw"><table><thead><tr><th>Ação</th><th>Usuário</th><th>Data</th></tr></thead><tbody><tr><td colspan="3" style="text-align:center;padding:20px;color:var(--muted)">Carregando...</td></tr></tbody></table></div>`;}
+async function loadDashboard(){
+  if(!S.guild)return;
+  const d=await api('/dashboard/stats?guild_id='+S.guild.id);if(!d)return;
+  const c=document.getElementById('dc');
+  if(c)c.innerHTML=[{l:'Verificados',v:d.total_verified||0,cl:'blue'},{l:'Servidores',v:d.total_servers||0,cl:''},{l:'Grupos',v:d.total_groups||0,cl:''},{l:'Hoje',v:d.verified_today||0,cl:'green'}].map(x=>`<div class="card"><div class="card-label">${x.l}</div><div class="card-value ${x.cl}">${x.v}</div></div>`).join('');
+  const ld=await api('/logs?guild_id='+S.guild.id);
+  const le=document.getElementById('dl');
+  if(le&&ld?.logs){const rows=ld.logs.slice(0,10).map(l=>`<tr><td><span class="badge bb">${l.action}</span></td><td>${l.discord_id||'—'}</td><td style="color:var(--muted);font-size:.8rem">${new Date(l.created_at).toLocaleString('pt-BR')}</td></tr>`).join('')||'<tr><td colspan="3" style="text-align:center;padding:20px;color:var(--muted)">Nenhum log ainda</td></tr>';le.innerHTML=`<table><thead><tr><th>Ação</th><th>Usuário</th><th>Data</th></tr></thead><tbody>${rows}</tbody></table>`;}
+}
+function renderGroups(){return `<h1 class="pt">Grupos Roblox</h1><p class="ps">Conecte grupos Roblox ao seu servidor</p><div id="ga"></div><div style="display:flex;gap:10px;margin-bottom:20px"><input id="gi" type="text" placeholder="ID ou link do grupo Roblox" style="max-width:340px"/><button class="btn btn-primary" onclick="addGroup()">+ Adicionar</button></div><div id="gl"></div>`;}
+async function loadGroups(){
+  if(!S.guild)return;
+  const d=await api('/groups?guild_id='+S.guild.id);if(!d)return;
+  S.groups=d.groups||[];
+  const el=document.getElementById('gl');if(!el)return;
+  if(!S.groups.length){el.innerHTML='<div class="empty"><div class="empty-icon">🎮</div><div class="empty-title">Nenhum grupo</div><div class="empty-desc">Adicione um grupo Roblox para começar.</div></div>';return;}
+  el.innerHTML=`<div class="tw"><table><thead><tr><th>Nome</th><th>ID</th><th></th></tr></thead><tbody>${S.groups.map(g=>`<tr><td><strong>${g.group_name||g.group_id}</strong></td><td><code>${g.group_id}</code></td><td><button class="btn btn-danger btn-sm" onclick="removeGroup('${g.group_id}')">Remover</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+async function addGroup(){
+  const inp=document.getElementById('gi');let id=inp?.value?.trim();if(!id)return;
+  const m=id.match(/groups\/([0-9]+)/);if(m)id=m[1];
+  showAlert('ga','info','Buscando grupo...');
+  const d=await api('/groups?guild_id='+S.guild.id,'POST',{group_id:id});
+  if(d?.success){showAlert('ga','success',`Grupo "${d.group.name}" adicionado!`);inp.value='';await loadGroups();}
+  else showAlert('ga','error',d?.error||'Erro ao adicionar grupo');
+}
+async function removeGroup(id){if(!confirm('Remover este grupo?'))return;await api('/groups?guild_id='+S.guild.id,'DELETE',{group_id:id});await loadGroups();}
+function renderRolesPage(){return `<h1 class="pt">Mapeamento de Cargos</h1><p class="ps">Vincule ranks Roblox a cargos Discord</p><div id="ra"></div><div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px"><div class="form-group" style="margin:0"><label>Grupo</label><select id="rg" onchange="loadRanks()"><option value="">Selecione...</option></select></div><div class="form-group" style="margin:0"><label>Rank Roblox</label><select id="rr"><option>Selecione o grupo primeiro</option></select></div><div class="form-group" style="margin:0"><label>ID Cargo Discord</label><input id="rd" type="text" placeholder="ID do cargo"/></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px"><div class="form-group" style="margin:0"><label>Tipo Prefixo</label><select id="rpt"><option value="auto">Automático</option><option value="manual">Manual</option><option value="none">Sem prefixo</option></select></div><div class="form-group" style="margin:0"><label>Prefixo Manual</label><input id="rpv" type="text" placeholder="Ex: [MOD]"/></div></div><button class="btn btn-primary" onclick="addMapping()">+ Adicionar mapeamento</button></div><div id="ml"></div>`;}
+async function loadRoles(){
+  if(!S.guild)return;
+  const d=await api('/roles?guild_id='+S.guild.id);if(d)S.mappings=d.mappings||[];
+  renderMappingsList();
+  const sel=document.getElementById('rg');
+  if(sel&&S.groups.length){S.groups.forEach(g=>{const o=document.createElement('option');o.value=g.group_id;o.textContent=g.group_name||g.group_id;sel.appendChild(o);});}
+}
+async function loadRanks(){
+  const gid=document.getElementById('rg')?.value;const rs=document.getElementById('rr');
+  if(!gid||!rs)return;rs.innerHTML='<option>Carregando...</option>';
+  const d=await api('/groups/ranks?guild_id='+S.guild.id+'&group_id='+gid);
+  if(d?.ranks)rs.innerHTML='<option value="">Selecione...</option>'+d.ranks.map(r=>`<option value="${r.rank}" data-name="${r.name}">${r.name} (Rank ${r.rank})</option>`).join('');
+}
+function renderMappingsList(){
+  const el=document.getElementById('ml');if(!el)return;
+  if(!S.mappings.length){el.innerHTML='<div class="empty"><div class="empty-icon">🎭</div><div class="empty-title">Nenhum mapeamento</div><div class="empty-desc">Adicione acima para vincular ranks a cargos.</div></div>';return;}
+  el.innerHTML=`<div class="tw"><table><thead><tr><th>Grupo</th><th>Rank</th><th>Cargo</th><th>Prefixo</th><th></th></tr></thead><tbody>${S.mappings.map(m=>`<tr><td>${m.group_id}</td><td>${m.roblox_rank_name||m.roblox_rank_id}</td><td><code>${m.discord_role_id}</code></td><td>${m.prefix?`<span class="badge bb">${m.prefix}</span>`:'<span class="badge bgr">—</span>'}</td><td><button class="btn btn-danger btn-sm" onclick="removeMapping('${m.group_id}','${m.roblox_rank_id}')">✕</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+async function addMapping(){
+  const gid=document.getElementById('rg')?.value;const rs=document.getElementById('rr');
+  const rv=rs?.value,rn=rs?.options[rs?.selectedIndex]?.dataset?.name;
+  const did=document.getElementById('rd')?.value?.trim();
+  const pt=document.getElementById('rpt')?.value;const pv=document.getElementById('rpv')?.value?.trim();
+  if(!gid||!rv||!did)return showAlert('ra','error','Preencha todos os campos obrigatórios');
+  const d=await api('/roles?guild_id='+S.guild.id,'POST',{group_id:gid,roblox_rank_id:rv,roblox_rank_name:rn,discord_role_id:did,prefix_type:pt,prefix:pv});
+  if(d?.success){showAlert('ra','success','Mapeamento adicionado!');await loadRoles();}
+  else showAlert('ra','error',d?.error||'Erro');
+}
+async function removeMapping(gid,rid){await api('/roles?guild_id='+S.guild.id,'DELETE',{group_id:gid,roblox_rank_id:rid});await loadRoles();}
+function renderConfig(){return `<h1 class="pt">Configurações</h1><p class="ps">Configurações do servidor</p><div id="ca"></div><div style="max-width:520px"><div class="form-group"><label>ID do Cargo "Verificado"</label><input id="vri" type="text" placeholder="ID do cargo Discord"/><p style="color:var(--muted);font-size:.75rem;margin-top:6px">Dado a todos após verificação. Nunca removido automaticamente.</p></div><div class="form-group"><label>Formato do Nickname</label><select id="nf"><option value="{username}">Username: Ruano_BR</option><option value="{display}">Display Name: Ruano</option><option value="{prefix} {username}">Prefixo + Username: [MOD] Ruano_BR</option><option value="{prefix} {display}">Prefixo + Display: [MOD] Ruano</option></select></div><button class="btn btn-primary" onclick="saveConfig()">💾 Salvar</button><div class="sep"></div><h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:12px">Sincronização Global</h3><p style="color:var(--muted);font-size:.875rem;margin-bottom:14px">Ressincroniza todos os membros verificados.</p><button class="btn btn-outline" onclick="syncAll()">🔄 Ressincronizar todos</button></div>`;}
+async function loadConfig(){
+  if(!S.guild)return;
+  const d=await api('/dashboard/server?guild_id='+S.guild.id);
+  if(d?.server){const s=d.server;const r=document.getElementById('vri');const n=document.getElementById('nf');if(r)r.value=s.verified_role_id||'';if(n)n.value=s.nickname_format||'{username}';}
+}
+async function saveConfig(){
+  const d=await api('/dashboard/server?guild_id='+S.guild.id,'PUT',{verified_role_id:document.getElementById('vri')?.value?.trim(),nickname_format:document.getElementById('nf')?.value});
+  if(d?.success)showAlert('ca','success','Configurações salvas!');else showAlert('ca','error','Erro ao salvar');
+}
+async function syncAll(){
+  if(!confirm('Ressincronizar TODOS os membros?'))return;
+  showAlert('ca','info','Enviando para fila...');
+  const d=await api('/sync/server','POST',{guild_id:S.guild.id});
+  if(d?.success)showAlert('ca','success',d.message);else showAlert('ca','error','Erro');
+}
+function renderLogsPage(){return `<h1 class="pt">Logs</h1><p class="ps">Histórico de ações</p><div id="lt"><div style="text-align:center;padding:40px;color:var(--muted)">Carregando...</div></div>`;}
+async function loadLogs(){
+  if(!S.guild)return;
+  const d=await api('/logs?guild_id='+S.guild.id);const el=document.getElementById('lt');if(!el)return;
+  if(!d?.logs?.length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Nenhum log</div><div class="empty-desc">Ações aparecerão aqui.</div></div>';return;}
+  el.innerHTML=`<div class="tw"><table><thead><tr><th>Ação</th><th>Usuário</th><th>Detalhes</th><th>Data</th></tr></thead><tbody>${d.logs.map(l=>{const c=l.action.includes('SYNC')?'bb':l.action.includes('ERROR')?'br':'bgr';return `<tr><td><span class="badge ${c}">${l.action}</span></td><td>${l.discord_id||'—'}</td><td style="color:var(--muted);font-size:.8rem">${l.details?JSON.stringify(JSON.parse(l.details)).slice(0,60):'—'}</td><td style="color:var(--muted);font-size:.8rem">${new Date(l.created_at).toLocaleString('pt-BR')}</td></tr>`;}).join('')}</tbody></table></div>`;
+}
+function renderVerify(){return `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px">${logo(40)}<div class="verify-card" style="margin-top:20px"><h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;margin-bottom:8px">Verificar conta Roblox</h2><p style="color:var(--muted);font-size:.875rem;margin-bottom:4px">Escolha como deseja se verificar:</p><div class="verify-methods"><div class="method-btn active" onclick="selMethod('oauth',this)"><div class="method-icon">🔗</div><div class="method-title">OAuth</div><div class="method-desc">Login direto</div></div><div class="method-btn" onclick="selMethod('bio',this)"><div class="method-icon">📝</div><div class="method-title">Bio</div><div class="method-desc">Código na bio</div></div></div><div id="vc"><button class="btn btn-primary" style="width:100%" onclick="startOAuth()">Entrar com Roblox</button></div></div></div>`;}
+function selMethod(m,el){document.querySelectorAll('.method-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');const c=document.getElementById('vc');if(!c)return;if(m==='oauth'){c.innerHTML='<button class="btn btn-primary" style="width:100%" onclick="startOAuth()">Entrar com Roblox</button>';}else{c.innerHTML=`<div id="bs1"><input type="text" id="ru" placeholder="Username no Roblox" style="margin-bottom:12px"/><button class="btn btn-primary" style="width:100%" onclick="genBioCode()">Gerar código</button></div><div id="bs2" style="display:none"><p style="font-size:.875rem;color:var(--muted);margin-bottom:8px">Cole na Bio do Roblox:</p><div class="code-box" id="bcd">—</div><p style="font-size:.8rem;color:var(--muted);margin-bottom:14px">Acesse <a href="https://www.roblox.com/users/profile" target="_blank" style="color:var(--blue2)">roblox.com/users/profile</a> e cole na bio.</p><button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="checkBio()">✓ Já coloquei o código</button><div id="bal"></div></div>`;}}
+async function startOAuth(){if(!S.token){go('login');return;}const d=await api('/verify/roblox/start');if(d?.url)location.href=d.url;}
+async function genBioCode(){if(!S.token){go('login');return;}const d=await api('/verify/bio/generate','POST',{});if(d?.code){document.getElementById('bs1').style.display='none';document.getElementById('bs2').style.display='block';document.getElementById('bcd').textContent=d.code;}}
+async function checkBio(){const u=document.getElementById('ru')?.value?.trim();if(!u){showAlert('bal','error','Digite seu username Roblox');return;}showAlert('bal','info','Verificando...');const d=await api('/verify/bio/check','POST',{roblox_username:u});if(d?.success)location.href='/verified?success=true';else showAlert('bal','error',d?.error||'Código não encontrado na bio');}
+function renderVerifiedSuccess(){const s=new URLSearchParams(location.search).get('success'),e=new URLSearchParams(location.search).get('error');return `<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;flex-direction:column;gap:16px">${s?`<div style="font-size:3rem">✅</div><h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem">Verificado com sucesso!</h2><p style="color:var(--muted)">Conta vinculada. Seus cargos serão aplicados em instantes.</p><button class="btn btn-primary" onclick="go('dashboard')">Ir para o painel</button>`:`<div style="font-size:3rem">❌</div><h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem">Erro na verificação</h2><p style="color:var(--muted)">${e||'Tente novamente.'}</p><button class="btn btn-outline" onclick="go('verify')">Tentar novamente</button>`}</div>`;}
+async function selectServer(id,name){await api('/auth/select-server','POST',{guild_id:id});S.guild={id,name};go('dashboard');}
+function loginDiscord(){location.href=API+'/auth/discord/login';}
+window.go=go;window.logout=logout;window.loginDiscord=loginDiscord;window.selectServer=selectServer;
+window.addGroup=addGroup;window.removeGroup=removeGroup;window.loadRanks=loadRanks;
+window.addMapping=addMapping;window.removeMapping=removeMapping;
+window.saveConfig=saveConfig;window.syncAll=syncAll;
+window.selMethod=selMethod;window.startOAuth=startOAuth;window.genBioCode=genBioCode;window.checkBio=checkBio;
+init();
+</script>
+</body>
+</html>
